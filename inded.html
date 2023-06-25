@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 12 Assignment: Cabin Rentals</title>
+  <link rel="stylesheet" href="node_modules/bootstrap/dist/js/bootstrap.bundle.js">
+</head>
+<body>
+  <div class="container">
+    <h1>Cabin Rentals</h1>
+
+    <!-- Here is my form for adding a new cabin entities -->
+    <form id="cabinForm">
+      <div class="form-group">
+        <label for="name">Cabin Name:</label>
+        <input type="text" class="form-control" id="name" required>
+      </div>
+      <div class="form-group">
+        <label for="location">Location:</label>
+        <input type="text" class="form-control" id="location" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Add Cabin</button>
+    </form>
+
+    <!-- Table to display existing cabin entities -->
+    <table id="cabinTable" class="table mt-4">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Location</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Populated dynamically with JavaScript -->
+      </tbody>
+    </table>
+  </div>
+
+  <script src="node_modules/jquery/package.json"></script>
+  <script>
+    // Function to fetch cabin entities from the server
+    function getCabins() {
+      $.ajax({
+        url: 'https://649849f39543ce0f49e1d87c.mockapi.io';
+        type: 'GET',
+        success: function (data) {
+          displayCabins(data);
+        }
+      });
+    }
+
+    // This function will display cabin entities in the table
+    function displayCabins(cabins) {
+      var tableBody = $('#cabinTable tbody');
+      tableBody.empty();
+
+      cabins.forEach(function (cabin) {
+        var row = '<tr>' +
+                    '<td>' + cabin.name + '</td>' +
+                    '<td>' + cabin.location + '</td>' +
+                    '<td>' +
+                      '<button class="btn btn-sm btn-primary edit-btn" data-id="' + cabin.id + '">Edit</button>' +
+                      '<button class="btn btn-sm btn-danger delete-btn" data-id="' + cabin.id + '">Delete</button>' +
+                    '</td>' +
+                  '</tr>';
+        tableBody.append(row);
+      });
+    }
+
+    // Function to handle form submission
+    $('#cabinForm').submit(function (event) {
+      event.preventDefault();
+
+      var name = $('#name').val();
+      var location = $('#location').val();
+
+      // AJAX request to add the cabin entity
+      $.ajax({
+        url: 'https://649849f39543ce0f49e1d87c.mockapi.io';
+        type: 'POST',
+        data: {
+          name: name,
+          location: location
+        },
+        success: function () {
+          getCabins();
+          $('#name').val('');
+          $('#location').val('');
+        }
+      });
+    });
+
+    // Function to handle delete button click
+    $('#cabinTable').on('click', '.delete-btn', function () {
+      var cabinId = $(this).data('id');
+
+      // I added AJAX here to handle the delete cabin entity
+      $.ajax({
+        url: https://649849f39543ce0f49e1d87c.mockapi.io + cabinId,
+        type: 'DELETE',
+        success: function () {
+          getCabins(); // Refresh the table after successful deletion
+        }
+      });
+    });
+
+    // This function will handle the edit button click
+    $('#cabinTable').on('click', '.edit-btn', function () {
+      var cabinId = $(this).data('id');
+    });
+
+    // Initial fetch of cabin entities when the page loads
+    getCabins();
+  </script>
+</body>
+</html>
